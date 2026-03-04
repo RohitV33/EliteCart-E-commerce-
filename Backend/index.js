@@ -11,7 +11,9 @@ import adminAuthRoutes from "./routes/adminAuth.routes.js";
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: "https://elitecart.vercel.app"
+}));
 app.use("/api/auth", authRoutes);     
 app.use("/api/orders", orderRoutes);   
 app.use("/api/admin", adminAuthRoutes);
