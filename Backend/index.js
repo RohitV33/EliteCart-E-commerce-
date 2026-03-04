@@ -6,6 +6,7 @@ dotenv.config();
 import orderRoutes from "./routes/order.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import adminAuthRoutes from "./routes/adminAuth.routes.js";
+import adminAuth from "./middleware/adminAuth.js";
 
 
 

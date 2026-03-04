@@ -18,7 +18,7 @@ export default function ShopContextProvider({ children }) {
 
  
   useEffect(() => {
-    fetch("https://elitecar.onrender.com/")
+    fetch("https://elitecar.onrender.com/api/products")
       .then(res => res.json())
       .then(data => setAllProducts(data))
       .catch(err => console.error(err));
