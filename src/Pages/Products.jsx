@@ -3,7 +3,7 @@ import { ShopContext } from "../Context/Context";
 import { useNavigate } from "react-router-dom";
 
 export default function Products() {
-  const { allProducts } = useContext(ShopContext);
+  const { allProducts, deleteProduct } = useContext(ShopContext);
   const navigate = useNavigate();
 
   return (

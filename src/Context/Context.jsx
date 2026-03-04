@@ -4,19 +4,29 @@ export const ShopContext = createContext(null);
 
 export default function ShopContextProvider({ children }) {
   const [allProducts, setAllProducts] = useState([]);
-  const [cart, setCart] = useState(() => {
-  const storedCart = localStorage.getItem("elitecart_cart");
-  return storedCart ? JSON.parse(storedCart) : [];
-});
+  const [isAdmin, setIsAdmin] = useState(false);
 
-useEffect(() => {
-  localStorage.setItem("elitecart_cart", JSON.stringify(cart));
-}, [cart]);
+  const [cart, setCart] = useState(() => {
+    const storedCart = localStorage.getItem("elitecart_cart");
+    return storedCart ? JSON.parse(storedCart) : [];
+  });
+
+
+  useEffect(() => {
+    localStorage.setItem("elitecart_cart", JSON.stringify(cart));
+  }, [cart]);
+
+ 
+  useEffect(() => {
+    fetch("http://localhost:5000/api/products")
+      .then(res => res.json())
+      .then(data => setAllProducts(data))
+      .catch(err => console.error(err));
+  }, []);
 
   const addToCart = (product) => {
-    setCart((prev) => {
+    setCart(prev => {
       const found = prev.find(item => item.id === product.id);
-
       if (found) {
         return prev.map(item =>
           item.id === product.id
@@ -24,7 +34,6 @@ useEffect(() => {
             : item
         );
       }
-
       return [...prev, { ...product, quantity: 1 }];
     });
   };
@@ -51,22 +60,28 @@ useEffect(() => {
     );
   };
 
-  const clearCart = () => {
-  setCart([]);
-  localStorage.removeItem("elitecart_cart");
-};
-
- 
   const removeFromCart = (id) => {
     setCart(prev => prev.filter(item => item.id !== id));
   };
 
-  
-  useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
-      .then(res => res.json())
-      .then(data => setAllProducts(data));
-  }, []);
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem("elitecart_cart");
+  };
+
+  const deleteProduct = async (id) => {
+    try {
+      await fetch(`http://localhost:5000/api/products/${id}`, {
+        method: "DELETE",
+      });
+
+      setAllProducts(prev =>
+        prev.filter(product => product.id !== id)
+      );
+    } catch (error) {
+      console.error("Delete failed", error);
+    }
+  };
 
   const contextValue = {
     allProducts,
@@ -76,6 +91,9 @@ useEffect(() => {
     decreaseQty,
     removeFromCart,
     clearCart,
+    deleteProduct,
+    isAdmin,
+    setIsAdmin,
   };
 
   return (

@@ -1,81 +1,94 @@
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useContext } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { AuthContext } from "../../Context/AuthContext";
 import { ShopContext } from "../../Context/Context";
+import { AdminContext } from "../../Context/AdminContext";
 
 export default function Navbar() {
+  const { user, logout } = useContext(AuthContext);
+  const { isAdmin, logoutAdmin } = useContext(AdminContext);
   const { cart } = useContext(ShopContext);
+  const navigate = useNavigate();
 
-  const handleLogoClick = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-200 shadow-sm">
-      <nav className="max-w-7xl mx-auto px-6 md:px-20 h-20 flex items-center justify-between">
+    <header className="sticky top-0 z-50 bg-white border-b">
+      <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
-        {/* TEXT LOGO */}
-        <Link
-          to="/"
-          onClick={handleLogoClick}
-          className="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900"
-        >
+        {/* LOGO */}
+        <Link to="/" className="text-2xl font-bold text-gray-900">
           Elite<span className="text-gray-500">Cart</span>
         </Link>
 
-        {/* NAV LINKS */}
-        <ul className="hidden md:flex gap-10 text-base font-medium text-gray-600">
-          {[
-            { name: "Home", path: "/" },
-            { name: "Products", path: "/products" },
-            { name: "Men", path: "/mens" },
-            { name: "Women", path: "/womens" },
-            { name: "Jewelry", path: "/jewelry" },
-          ].map((item) => (
-            <li key={item.name}>
-              <NavLink
-                to={item.path}
-                className={({ isActive }) =>
-                  `transition-colors duration-300 ${
-                    isActive
-                      ? "text-gray-900 font-semibold"
-                      : "hover:text-gray-900"
-                  }`
-                }
-              >
-                {item.name}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+        {/* LINKS */}
+        <div className="hidden md:flex gap-8 text-gray-700 font-medium">
+          <NavLink to="/" className="hover:text-black">Home</NavLink>
+          <NavLink to="/products" className="hover:text-black">Products</NavLink>
+          <NavLink to="/men" className="hover:text-black">Men</NavLink>
+          <NavLink to="/women" className="hover:text-black">Women</NavLink>
+          <NavLink to="/jewelry" className="hover:text-black">Jewelry</NavLink>
+        </div>
 
-        {/* ACTIONS */}
+        {/* RIGHT ACTIONS */}
         <div className="flex items-center gap-4">
 
-          {/* Login */}
-          <Link to="/login">
-            <button className="hidden md:block px-6 py-2 rounded-full border border-gray-900 text-gray-900 font-medium
-              transition-all duration-300 hover:bg-gray-900 hover:text-white">
+          {/* USER LOGGED IN */}
+          {user && (
+            <NavLink
+              to="/my-orders"
+              className="px-4 py-2 rounded-full border text-sm font-medium hover:bg-gray-100"
+            >
+              My Orders
+            </NavLink>
+          )}
+
+          {/* LOGIN / LOGOUT */}
+          {!user ? (
+            <NavLink
+              to="/login"
+              className="px-5 py-2 rounded-full border text-sm font-semibold hover:bg-gray-100"
+            >
               Login
+            </NavLink>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="px-5 py-2 rounded-full border text-sm font-semibold hover:bg-gray-100"
+            >
+              Logout
             </button>
-          </Link>
+          )}
 
-          {/* Cart */}
-          <Link to="/cart" className="relative">
-            <div className="px-5 py-2 rounded-full bg-gray-900 text-white font-medium
-              transition-all duration-300 hover:bg-gray-800">
-              Cart
-            </div>
-
+          {/* CART */}
+          <NavLink
+            to="/cart"
+            className="relative px-5 py-2 rounded-full bg-gray-900 text-white text-sm font-semibold"
+          >
+            Cart
             {cart.length > 0 && (
-              <span className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center
-                rounded-full bg-red-500 text-white text-xs font-bold">
+              <span className="absolute -top-2 -right-2 w-5 h-5 text-xs flex items-center justify-center rounded-full bg-red-500 text-white">
                 {cart.length}
               </span>
             )}
-          </Link>
+          </NavLink>
 
         </div>
+        <div>
+      {isAdmin && (
+        <button
+          onClick={logoutAdmin}
+          className="bg-red-500 text-white px-4 py-2 rounded"
+        >
+          Admin Logout
+        </button>
+      )}
+    </div>
       </nav>
     </header>
+    
   );
 }
