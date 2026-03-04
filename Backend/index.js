@@ -20,6 +20,10 @@ app.use(cors({
   credentials: true
 }));
 
+app.get("/", (req, res) => {
+  res.send("EliteCart Backend Running 🚀");
+});
+
 app.get("/test-db", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT 1");
