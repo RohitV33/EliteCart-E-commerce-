@@ -2,24 +2,33 @@ import express from "express";
 import pool from "./db.js";
 import cors from "cors";
 import dotenv from "dotenv";
-
+dotenv.config();
 import orderRoutes from "./routes/order.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import adminAuthRoutes from "./routes/adminAuth.routes.js";
 import { adminAuth } from "./middleware/adminAuth.js";
 
-dotenv.config();
+
+
 
 const app = express();
-
 app.use(express.json());
-
 app.use(cors({
   origin: [
     "https://elitecart.vercel.app"
   ],
   credentials: true
 }));
+
+app.get("/test-db", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT 1");
+    res.json("Database connected ✅");
+  } catch (err) {
+    console.log(err);
+    res.json("Database connection failed ❌");
+  }
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
